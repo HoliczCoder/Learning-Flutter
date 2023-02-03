@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "410923494480",
+    "project_id": "learning-minh-dart",
+    "storage_bucket": "learning-minh-dart.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:410923494480:android:1134a11c4a573520aa7555",
+        "android_client_info": {
+          "package_name": "com.example.learningdart"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqW1naYl3WKsNe_3fZWatQKE4IxusEzaE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
