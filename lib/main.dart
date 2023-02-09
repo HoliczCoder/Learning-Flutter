@@ -1,18 +1,29 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:learningdart/views/login_view.dart';
+import 'package:learningdart/views/register_view.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 void main() {
-  newTest();
+  // newTest();
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MaterialApp(
     title: 'Flutter Demo',
     theme: ThemeData(
       primarySwatch: Colors.blue,
     ),
     home: const HomePage(),
+    routes: {
+      '/login/': (context) => const LoginView(),
+      '/register/': (context) => const RegisterView(),
+    },
   ));
 }
+
+////////////////////////////////////////////////////
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,69 +33,62 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late final TextEditingController _email;
-  late final TextEditingController _password;
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      ),
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.done:
+            final user = (FirebaseAuth.instance.currentUser);
+            if (user?.emailVerified ?? false) {
+              return const LoginView();
+            } else {
+              return const VerifyEmailView();
+            }
+          default:
+            return const CircularProgressIndicator();
+        }
+        // return LoginView();
+      },
+    );
+  }
+}
+
+////////////////////////////////////////////////////
+class VerifyEmailView extends StatefulWidget {
+  const VerifyEmailView({super.key});
 
   @override
-  void initState() {
-    // TODO: implement initState, create automatically when home page
-    _email = TextEditingController();
-    _password = TextEditingController();
-    super.initState();
-  }
+  State<VerifyEmailView> createState() => _VerifyEmailViewState();
+}
 
-  @override
-  void dispose() {
-    // TODO: implement dispose when home page die
-    _email.dispose();
-    _password.dispose();
-    super.dispose();
-  }
-
+class _VerifyEmailViewState extends State<VerifyEmailView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Register'),
+        title: const Text("Verify email"),
       ),
       body: Column(
         children: [
-          TextField(
-            controller: _email,
-            enableSuggestions: false,
-            autocorrect: false,
-            keyboardType: TextInputType.emailAddress,
-            decoration:
-                const InputDecoration(hintText: 'Enter your email here'),
-          ),
-          TextField(
-            controller: _password,
-            obscureText: true,
-            enableSuggestions: false,
-            autocorrect: false,
-            decoration: const InputDecoration(hintText: 'Enter your password'),
-          ),
+          Text('Please verify your email address'),
           TextButton(
             onPressed: () async {
-              debugPrint("hello world");
-              final email = _email.text;
-              final password = _password.text;
-              await Firebase.initializeApp(
-                options: DefaultFirebaseOptions.currentPlatform,
-              );
-              final userCredential = await FirebaseAuth.instance
-                  .createUserWithEmailAndPassword(
-                      email: email, password: password);
-              print(userCredential);
+              final user = FirebaseAuth.instance.currentUser;
+              await user?.sendEmailVerification();
             },
-            child: const Text('Register'),
-          ),
+            child: const Text('Send email verification'),
+          )
         ],
       ),
     );
   }
 }
 
+////////////////////////////////////////////////////
 void test(List<String>? names) {
   final numberOfNames = names?.length;
 }
